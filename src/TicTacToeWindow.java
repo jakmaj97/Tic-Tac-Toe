@@ -16,7 +16,8 @@ import javafx.scene.layout.Border;
 
 public class TicTacToeWindow extends JFrame implements ActionListener
 {
-	final int WINDOW_SIZE = 400;
+	final int WINDOW_WIDTH = 400;
+	final int WINDOW_HEIGHT = 500;
 	final int TITLE_HEIGHT = 40;
 	final int TITLE_WIDTH = 200;
 	final int TITLE_FONT_SIZE = 30;
@@ -47,11 +48,12 @@ public class TicTacToeWindow extends JFrame implements ActionListener
 	JButton bChampionX;
 	JButton bChampionO;
 	String sUserSign;
+	String sCPUSign;
 	BattleGround bgBattleGround;
 	
 	TicTacToeWindow()
 	{
-		setSize(WINDOW_SIZE, WINDOW_SIZE);
+		setSize(WINDOW_WIDTH, WINDOW_HEIGHT);
 		setTitle(TITLE);
 		setLayout(null);
 		
@@ -93,11 +95,13 @@ public class TicTacToeWindow extends JFrame implements ActionListener
 			if((e.getSource()).equals(bChampionX))
 			{
 				sUserSign = "X";
+				sCPUSign = "O";
 				lSpeaker.setText(SPEAKER_COMM_6+CHAMPION_X_NAME);
 			}
 			else
 			{
 				sUserSign = "O";
+				sCPUSign = "X";
 				lSpeaker.setText(SPEAKER_COMM_6+CHAMPION_O_NAME);
 			}
 			bChampionO.setVisible(false);
@@ -106,17 +110,20 @@ public class TicTacToeWindow extends JFrame implements ActionListener
 			remove(bChampionX);	
 			v_add_battle_ground();
 		}
-		for(int i = 0; i < bgBattleGround.getFields().size(); i++)
-			if((e.getSource()).equals(bgBattleGround.getFields().get(i)))
-				bgBattleGround.getFields().get(i).setText(sUserSign);
+		for(int i = 0; i < bgBattleGround.al_get_fields().size(); i++)
+			if((e.getSource()).equals(bgBattleGround.al_get_fields().get(i)))
+			{
+				bgBattleGround.al_get_fields().get(i).setText(sUserSign);
+				bgBattleGround.jb_cpu_turn(sUserSign, sCPUSign).setText(sCPUSign);
+			}
 	}
 	void v_add_battle_ground()
 	{
-		bgBattleGround = new BattleGround(WINDOW_SIZE, FIELD_FROM_UP_FRAME, FIELD_SIZE, FIELD_FONT_SIZE, FIELD_SHIFT);
-		for(int i = 0; i < bgBattleGround.getFields().size(); i++)
+		bgBattleGround = new BattleGround(WINDOW_WIDTH, FIELD_FROM_UP_FRAME, FIELD_SIZE, FIELD_FONT_SIZE, FIELD_SHIFT);
+		for(int i = 0; i < bgBattleGround.al_get_fields().size(); i++)
 		{
-			bgBattleGround.getFields().get(i).addActionListener(this);
-			add(bgBattleGround.getFields().get(i));
+			bgBattleGround.al_get_fields().get(i).addActionListener(this);
+			add(bgBattleGround.al_get_fields().get(i));
 		}
 	}
 }
