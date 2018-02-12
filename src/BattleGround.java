@@ -17,6 +17,7 @@ public class BattleGround
 	final int FIELD_8 = 8;
 	final int OUT_OF_FIELDS = 9;
 	final int COLUMN_SHIFT = 3;
+	final int SLANT_SHIFT = 4;
 	final int NEVER_WILL_HAPPEN = 69;
 	
 	final String EMPTY_STRING = "";
@@ -69,16 +70,22 @@ public class BattleGround
 	{
 		int iPotentialField = (new Random()).nextInt(OUT_OF_FIELDS);
 		boolean bEmptyBattleGround = true;
-		for(int i = 0; i < alFields.size()-1; i++)
+		for(int i = 0; i < alFields.size(); i++)
 			if(alFields.get(i).getText() == sCPUSign)
 				bEmptyBattleGround = false;
 		if(bEmptyBattleGround)
-			return (new Random()).nextInt(OUT_OF_FIELDS);
+		{
+			int iComm = (new Random()).nextInt(OUT_OF_FIELDS);
+			while(alFields.get(iComm).getText() != EMPTY_STRING)
+				iComm = (new Random()).nextInt(OUT_OF_FIELDS);
+			return iComm;
+		}
 		else
 		{
 			while(alFields.get(iPotentialField).getText() != sCPUSign)
 				iPotentialField = (new Random()).nextInt(OUT_OF_FIELDS);
-			return i_one_sign_offence(sCPUSign, iPotentialField);
+			int iComm = i_one_sign_offence(sCPUSign, iPotentialField);
+			return iComm;
 		}
 	}
 	int i_win(String sUserSign, String sCPUSign)
@@ -86,9 +93,55 @@ public class BattleGround
 		int iPotentialField = i_two_sign_offence(sUserSign, sCPUSign);
 		return iPotentialField;
 	}
+	int i_end(String sUserSign, String sCPUSign)
+	{
+		int iEnd = i_rows_end(sCPUSign, sUserSign);
+		if(iEnd != 0)
+			return iEnd;
+		iEnd = i_column_end(sCPUSign, sUserSign);
+		if(iEnd != 0)
+			return iEnd;
+		iEnd = i_slant_end(sCPUSign, sUserSign);
+		return iEnd;
+	}
+	int i_rows_end(String sCPUSign, String sUserSign) //1 when user wins, 2 when CPU, 0 not win
+	{
+		for(int i = 0; i < OUT_OF_FIELDS; i += 3)
+		{
+			if(alFields.get(i).getText() == alFields.get(i+1).getText() && alFields.get(i).getText() == alFields.get(i+2).getText() && alFields.get(i).getText() == sUserSign)
+				return 1;
+			else if(alFields.get(i).getText() == alFields.get(i+1).getText() && alFields.get(i).getText() == alFields.get(i+2).getText() && alFields.get(i).getText() == sCPUSign)
+				return 2;
+		}
+		return 0;
+	}
+	int i_column_end(String sCPUSign, String sUserSign)
+	{
+		for(int i = 0; i < 3; i++)
+		{
+			if(alFields.get(i).getText() == alFields.get(i + COLUMN_SHIFT).getText() && alFields.get(i).getText() == alFields.get(i + 2*COLUMN_SHIFT).getText() && alFields.get(i).getText() == sUserSign)
+				return 1;
+			else if(alFields.get(i).getText() == alFields.get(i + COLUMN_SHIFT).getText() && alFields.get(i).getText() == alFields.get(i + 2*COLUMN_SHIFT).getText() && alFields.get(i).getText() == sCPUSign)
+				return 2;
+		}
+		return 0;
+	}
+	int i_slant_end(String sCPUSign, String sUserSign)
+	{
+		if(alFields.get(0).getText() == alFields.get(SLANT_SHIFT).getText() && alFields.get(0).getText() == alFields.get(2*SLANT_SHIFT).getText() && alFields.get(0).getText() == sUserSign)
+			return 1;
+		else if(alFields.get(0).getText() == alFields.get(SLANT_SHIFT).getText() && alFields.get(0).getText() == alFields.get(2*SLANT_SHIFT).getText() && alFields.get(0).getText() == sCPUSign)
+			return 2;
+		else if(alFields.get(2).getText() == alFields.get(SLANT_SHIFT).getText() && alFields.get(2).getText() == alFields.get(2+SLANT_SHIFT).getText() && alFields.get(2).getText() == sUserSign)
+			return 1;
+		else if(alFields.get(2).getText() == alFields.get(SLANT_SHIFT).getText() && alFields.get(2).getText() == alFields.get(2+SLANT_SHIFT).getText() && alFields.get(2).getText() == sUserSign)
+			return 2;
+		else
+			return 0;
+	}
 	int i_check_horizontal(String sUserSign, String sCPUSign) //Check all rows
 	{
-		for(int i = 0; i < 2*COLUMN_SHIFT; i += COLUMN_SHIFT)
+		for(int i = 0; i < OUT_OF_FIELDS; i += COLUMN_SHIFT)
 		{
 			int iRowBlock = i_check_row(sUserSign, sCPUSign, i);
 			if(iRowBlock != OUT_OF_FIELDS)
@@ -151,7 +204,7 @@ public class BattleGround
 	}
 	int i_one_sign_offence(String sCPUSing, int iField)
 	{
-		int iFieldToSign = OUT_OF_FIELDS;
+		int iFieldToSign = OUT_OF_FIELDS-1;
 		if(iField == FIELD_0)
 		{
 			while((iFieldToSign != FIELD_1 && iFieldToSign != FIELD_3 && iFieldToSign != FIELD_4) || alFields.get(iFieldToSign).getText() != EMPTY_STRING)
