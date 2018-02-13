@@ -134,7 +134,7 @@ public class BattleGround
 			return 2;
 		else if(alFields.get(2).getText() == alFields.get(SLANT_SHIFT).getText() && alFields.get(2).getText() == alFields.get(2+SLANT_SHIFT).getText() && alFields.get(2).getText() == sUserSign)
 			return 1;
-		else if(alFields.get(2).getText() == alFields.get(SLANT_SHIFT).getText() && alFields.get(2).getText() == alFields.get(2+SLANT_SHIFT).getText() && alFields.get(2).getText() == sUserSign)
+		else if(alFields.get(2).getText() == alFields.get(SLANT_SHIFT).getText() && alFields.get(2).getText() == alFields.get(2+SLANT_SHIFT).getText() && alFields.get(2).getText() == sCPUSign)
 			return 2;
 		else
 			return 0;

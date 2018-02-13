@@ -49,21 +49,26 @@ public class TicTacToeWindow extends JFrame implements ActionListener
 	final String CHAMPION_O_NAME = "O";
 	final String EMPTY_STRING = "";
 	final String EXIT = "Exit";
+	final String RESET = "Reset";
 	
 	JLabel lTitle;
 	JLabel lSpeaker;
 	JButton bChampionX;
 	JButton bChampionO;
 	JButton bExit;
+	JButton bReset;
 	String sUserSign;
 	String sCPUSign;
 	BattleGround bgBattleGround;
+	boolean bFieldsExist;
 	
 	TicTacToeWindow()
 	{
+		bFieldsExist = false;
 		setSize(WINDOW_WIDTH, WINDOW_HEIGHT);
 		setTitle(TITLE);
 		setLayout(null);
+		setLocationRelativeTo(null);
 		
 		//TITLE
 		lTitle = new JLabel(TITLE);
@@ -87,6 +92,14 @@ public class TicTacToeWindow extends JFrame implements ActionListener
 		bExit.addActionListener(this);
 		add(bExit);
 		
+		//RESET
+		bReset = new JButton(RESET);
+		bReset.setSize(EXIT_WIDTH, EXIT_HEIGHT);
+		bReset.setFont(new Font("ComicSans", Font.BOLD, FIELD_FONT_SIZE));
+		bReset.setLocation(EXIT_HEIGHT, WINDOW_HEIGHT-EXIT_WIDTH);
+		bReset.addActionListener(this);
+		add(bReset);
+		
 		//CHAMPIONS
 		bChampionX = new JButton(CHAMPION_X_NAME);
 		bChampionX.setSize(CHAMPION_SIZE, CHAMPION_SIZE);
@@ -108,6 +121,18 @@ public class TicTacToeWindow extends JFrame implements ActionListener
 	{
 		if((e.getSource()).equals(bExit))
 			dispose();
+		else if((e.getSource()).equals(bReset))
+		{
+			if(bFieldsExist)
+			{
+				v_delete_battle_ground();
+				lSpeaker.setText(SPEAKER_COMM_1);
+				add(bChampionX);
+				add(bChampionO);
+				bChampionX.setVisible(true);
+				bChampionO.setVisible(true);
+			}
+		}
 		else
 		{
 			if((e.getSource()).equals(bChampionX) || (e.getSource()).equals(bChampionO))
@@ -131,7 +156,7 @@ public class TicTacToeWindow extends JFrame implements ActionListener
 				v_add_battle_ground();
 			}
 			for(int i = 0; i < bgBattleGround.al_get_fields().size(); i++)
-				if((e.getSource()).equals(bgBattleGround.al_get_fields().get(i)) && bgBattleGround.al_get_fields().get(i).getText() == EMPTY_STRING)
+				if((e.getSource()).equals(bgBattleGround.al_get_fields().get(i)) && bgBattleGround.al_get_fields().get(i).getText() == EMPTY_STRING && !b_check_end())
 				{
 					bgBattleGround.al_get_fields().get(i).setText(sUserSign);
 					if(!b_check_end())
@@ -160,9 +185,6 @@ public class TicTacToeWindow extends JFrame implements ActionListener
 					lSpeaker.setText(SPEAKER_COMM_7);
 				else
 					lSpeaker.setText(SPEAKER_COMM_8);
-				for(int j = 0; j < bgBattleGround.al_get_fields().size(); j++)
-					if(bgBattleGround.al_get_fields().get(j).getText() == EMPTY_STRING)
-						remove (bgBattleGround.al_get_fields().get(j));
 				return true;
 			}
 			return false;
@@ -170,11 +192,21 @@ public class TicTacToeWindow extends JFrame implements ActionListener
 	}
 	void v_add_battle_ground()
 	{
+		bFieldsExist = true;
 		bgBattleGround = new BattleGround(WINDOW_WIDTH, FIELD_FROM_UP_FRAME, FIELD_SIZE, FIELD_FONT_SIZE, FIELD_SHIFT);
 		for(int i = 0; i < bgBattleGround.al_get_fields().size(); i++)
 		{
 			bgBattleGround.al_get_fields().get(i).addActionListener(this);
 			add(bgBattleGround.al_get_fields().get(i));
+		}
+	}
+	void v_delete_battle_ground()
+	{
+		bFieldsExist = false;
+		for(int i = 0; i < bgBattleGround.al_get_fields().size(); i++)
+		{
+			bgBattleGround.al_get_fields().get(i).setVisible(false);
+			remove (bgBattleGround.al_get_fields().get(i));
 		}
 	}
 }
